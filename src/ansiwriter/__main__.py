@@ -13,6 +13,7 @@ def main():
     frames.append(" . \n   \n   ")
     frames.append("   \n   \n   ")
     frames.append(" * \n   \n   ")
+    frames.append("   \n   \n   ")
     for frame in frames:
         writer.write_frame(frame)
         sleep(0.33)
