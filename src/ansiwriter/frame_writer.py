@@ -67,9 +67,10 @@ class FrameWriter:
         :rtype: list(int)'''
         differences = [-1 for _ in range(self.__height)]
         for y, row in enumerate(self.__current_frame):
-            for x, char in enumerate(row):
+            for x, char in enumerate(row[::-1]):
                 if char != self.__last_frame[y][x]:
-                    differences[y] = x
+                    differences[y] = len(row)-x
+                    continue
         return differences
 
 
@@ -97,8 +98,8 @@ class FrameWriter:
                 self.__stream.write('\033[G')
                 for char in line:
                     self.__stream.write(char)
-                # Move cursor down
-                self.__stream.write('\033[B')
+                # We newline instead of moving cursor down to ensure there's space for further writes.
+                self.__stream.write(linesep)
 
         else:
             # Move up
