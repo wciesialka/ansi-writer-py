@@ -10,18 +10,26 @@ class FrameWriter:
     '''A class with the primary function of writing frames to a stream.'''
 
     def __init__(self, width: int, height: int, stream: TextIO = stdout):
-        self.__stream = stream
-        self.__width = width
-        self.__height = height
-        self.__last_frame = None
-        self.__current_frame = None
+        self.__stream: TextIO = stream
+        self.__width: int = width
+        self.__height: int = height
+        self.__last_frame: List[List[str]] = None
+        self.__current_frame: List[List[str]] = None
 
     @property
     def width(self) -> int:
+        '''Return the width of the writer.
+
+        :returns: Width of writer.
+        :rtype: int'''
         return self.__width
 
     @property
     def height(self) -> int:
+        '''Return the height of the writer.
+
+        :returns: height of writer.
+        :rtype: int'''
         return self.__height
 
     @staticmethod
@@ -51,12 +59,17 @@ class FrameWriter:
             return True
         return False
 
-    def __find_differences(self):
+    def __find_differences(self) -> List[int]:
+        '''Find differences between the writer's current frame and last frame.
+
+        :returns: A list containing the indices of the \
+            rightmost change in each row of the current frame.
+        :rtype: list(int)'''
         differences = [-1 for _ in range(self.__height)]
         for y, row in enumerate(self.__current_frame):
-            for x, char in enumerate(self.__current_frame):
-                    if char != self.__last_frame[y][x]:
-                        differences[y] = x
+            for x, char in enumerate(row):
+                if char != self.__last_frame[y][x]:
+                    differences[y] = x
         return differences
 
 
@@ -67,7 +80,7 @@ class FrameWriter:
         :type frame: list(list(str))'''
 
         # Check if frame is a plain string. If it is, prepare it.
-        if(isinstance(frame,str)):
+        if isinstance(frame, str):
             frame = FrameWriter.prepare_frame(frame)
 
         # Check size of frame.
@@ -102,7 +115,3 @@ class FrameWriter:
                 # Move cursor down.
                 self.__stream.write('\033[B')
         self.__stream.flush()
-                    
-
-
-    
