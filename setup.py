@@ -19,11 +19,6 @@ CONTENT = {
     "long_description_content_type": "text/markdown",
     "license": "GPL-3.0",
     "packages": find_packages(where="src"),
-    "entry_points": {
-        'console_scripts': [
-            'asciidotter = ascii_dotter.__main__:cli_entry_point'
-        ]
-    },
     "classifiers": [
         "License :: OSI Approved :: GNU Affero General Public License v3",
         "Programming Language :: Python :: 3",
