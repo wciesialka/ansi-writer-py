@@ -1,9 +1,38 @@
+#!/usr/bin/env python3
 '''Module containing the FrameWriter'''
 
+import functools
 from typing import TextIO, List
 from sys import stdout
 from copy import deepcopy
 from os import linesep
+import re
+
+FRAME_SPLIT_REGEX = re.compile(r'(\033\[\d+;?\d*(?:[A-Z]|[a-z]).?|.)')
+
+def contains_printable(string: str) -> bool:
+    '''Returns true if the string contains at least one printable character.
+    
+    :param string: String to check.
+    :type string: str'''
+
+    return any([char.isprintable() for char in string])
+
+def split_frame_line(line: str) -> List[str]:
+    '''Split a line into a row for a frame.'''
+    row = [str(group) for group in FRAME_SPLIT_REGEX.findall(line)]
+
+    for i, _ in enumerate(row):
+        while not contains_printable(row[i]):
+            if i >= len(row)-1:
+                break
+            row[i] += row.pop(i+1)
+            
+    if len(row) > 1 and not contains_printable(row[-1]):
+        tmp = row.pop(-1)
+        row[-1] += tmp
+
+    return row
 
 class FrameWriter:
 
@@ -41,7 +70,7 @@ class FrameWriter:
         :returns: Prepared frame.
         :rtype: list(list(str))'''
         lines = source.split(linesep)
-        frame = [list(line) for line in lines]
+        frame = [split_frame_line(line) for line in lines]
         return frame
 
     def __check_frame_size(self, frame: List[List[str]]) -> bool:
