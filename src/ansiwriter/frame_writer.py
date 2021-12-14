@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 '''Module containing the FrameWriter'''
 
-import functools
 from typing import TextIO, List
 from sys import stdout
 from copy import deepcopy
 from os import linesep
 import re
 
-FRAME_SPLIT_REGEX = re.compile(r'(\033\[\d+;?\d*(?:[A-Z]|[a-z]).?|.)')
+FRAME_SPLIT_REGEX = re.compile(r'(\033\[\d+;?\d*(?:[A-Z]|[a-z]).?|\033[NOP\[\\\]X\^\_].?|.)')
 
 def contains_printable(string: str) -> bool:
     '''Returns true if the string contains at least one printable character.
@@ -140,8 +139,15 @@ class FrameWriter:
                 self.__stream.write('\033[G')
                 change = changes[y]
                 if change > -1:
-                    for i in range(change):
+
+                    for i in range(change+1):
+                        str_length_difference = len(self.__last_frame[y][i]) - len(row[i])
+                        for _ in range(str_length_difference):
+                            # Write a zero-width character to clean out anything left behind.
+                            self.__stream.write('\u200b')
+
                         self.__stream.write(row[i])
+                    
                 # Move cursor down.
                 self.__stream.write('\033[B')
         self.__stream.flush()

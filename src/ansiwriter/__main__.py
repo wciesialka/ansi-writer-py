@@ -12,7 +12,7 @@ def main():
     frames.append("   \n . \n   ")
     frames.append(" . \n   \n   ")
     frames.append("   \n   \n   ")
-    frames.append(" * \n   \n   ")
+    frames.append(" \033[91m*\033[39m \n   \n   ")
     frames.append("   \n   \n   ")
     for frame in frames:
         writer.write_frame(frame)
