@@ -11,14 +11,21 @@ FRAME_SPLIT_REGEX = re.compile(r'(\033\[\d+;?\d*(?:[A-Z]|[a-z]).?|\033[NOP\[\\\]
 
 def contains_printable(string: str) -> bool:
     '''Returns true if the string contains at least one printable character.
-    
+
     :param string: String to check.
-    :type string: str'''
+    :type string: str
+    :returns: True if the string contains at least one printable character.
+    :rtype: bool'''
 
     return any([char.isprintable() for char in string])
 
 def split_frame_line(line: str) -> List[str]:
-    '''Split a line into a row for a frame.'''
+    '''Split a line into a row for a frame.
+
+    :param line: Line to split.
+    :type line: str
+    :returns: Row of frame.
+    :rtype: list(str)'''
     row = [str(group) for group in FRAME_SPLIT_REGEX.findall(line)]
 
     for i, _ in enumerate(row):
@@ -26,7 +33,7 @@ def split_frame_line(line: str) -> List[str]:
             if i >= len(row)-1:
                 break
             row[i] += row.pop(i+1)
-            
+
     if len(row) > 1 and not contains_printable(row[-1]):
         tmp = row.pop(-1)
         row[-1] += tmp
@@ -126,7 +133,8 @@ class FrameWriter:
                 self.__stream.write('\033[G')
                 for char in line:
                     self.__stream.write(char)
-                # We newline instead of moving cursor down to ensure there's space for further writes.
+                # We newline instead of moving cursor down to
+                # ensure there's space for further writes.
                 self.__stream.write(linesep)
 
         else:
@@ -147,7 +155,7 @@ class FrameWriter:
                             self.__stream.write('\u200b')
 
                         self.__stream.write(row[i])
-                    
+
                 # Move cursor down.
                 self.__stream.write('\033[B')
         self.__stream.flush()
